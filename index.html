@@ -280,18 +280,14 @@
               <div class="search-form-content">
                 <div class="form-item"><label class="form-label">业务子类</label><select class="form-select" id="search-subType"><option value="">全部</option></select></div>
                 <div class="form-item"><label class="form-label">工单类型编码</label><select class="form-select" id="search-orderCode"><option value="">全部</option></select></div>
-                <div class="form-item"><label class="form-label">工单类型名称</label><select class="form-select" id="search-orderName"><option value="">全部</option></select></div>
+                <div class="form-item"><label class="form-label">工单类型</label><select class="form-select" id="search-orderType"><option value="">全部</option></select></div>
                 <div class="form-item"><label class="form-label">工单分类</label><select class="form-select" id="search-orderCategory"><option value="">全部</option></select></div>
-                <div class="form-item"><label class="form-label">是否内外勤</label><select class="form-select" id="search-attribute"><option value="">全部</option></select></div>
+                <div class="form-item"><label class="form-label">业务属性</label><select class="form-select" id="search-attribute"><option value="">全部</option></select></div>
               </div>
             </div>
             <div class="search-form-row">
               <div class="search-form-content">
-                <div class="form-item"><label class="form-label">是否启用</label><select class="form-select" id="search-enabled"><option value="">全部</option><option value="yes">是</option><option value="no">否</option></select></div>
-                <div class="form-item"><label class="form-label">是否有轨迹</label><select class="form-select" id="search-trace"><option value="">全部</option><option value="yes">是</option><option value="no">否</option></select></div>
-                <div class="form-item"><label class="form-label">是否涉及车辆</label><select class="form-select" id="search-vehicle"><option value="">全部</option><option value="yes">是</option><option value="no">否</option></select></div>
-                <div class="form-item"><label class="form-label">是否涉及物资</label><select class="form-select" id="search-material"><option value="">全部</option><option value="yes">是</option><option value="no">否</option></select></div>
-                <div class="form-item"><label class="form-label">是否涉及票卡</label><select class="form-select" id="search-ticket"><option value="">全部</option><option value="yes">是</option><option value="no">否</option></select></div>
+                <div class="form-item"><label class="form-label">是否启用线上工单</label><select class="form-select" id="search-enabled"><option value="">全部</option><option value="启用">启用</option><option value="关闭">关闭</option></select></div>
               </div>
             </div>
           </div>
@@ -308,7 +304,7 @@
             <table class="table">
               <thead>
                 <tr>
-                  <th>序号</th><th>系统编码</th><th>源端系统</th><th>业务类型编码</th><th>业务类型</th><th>业务子类编码</th><th>业务子类</th><th>工单类型编码</th><th>工单类型名称</th><th>工单分类</th><th>是否启用</th><th>是否有轨迹</th><th>是否内外勤</th><th>是否涉及物资</th><th>是否涉及车辆</th><th>是否涉及票卡</th><th>操作</th>
+                  <th>序号</th><th>系统编码</th><th>源端系统</th><th>业务类型编码</th><th>业务类型</th><th>业务子类编码</th><th>业务子类</th><th>工单类型编码</th><th>工单类型</th><th>是否启用线上工单</th><th>工单分类</th><th>业务属性</th><th>工单环节编码</th><th>工单环节名称</th><th>操作</th>
                 </tr>
               </thead>
               <tbody id="table-body"></tbody>
@@ -405,18 +401,16 @@
     ];
 
     const mockData = [
-      { id: 1, traceSystem: 'gyxt', systemCode: '营销2.0', businessCode: 'BMT01', businessType: '营业', subCode: 'BM01_01', subType: '获得电力', orderCode: 'BAC_010000', orderName: '低压居民新装', orderCategory: '设备工单', attribute: '外勤', enabled: '是', trace: '否', vehicle: '否', material: '否', ticket: '否' },
-      { id: 2, traceSystem: 'gyxt', systemCode: '营销2.0', businessCode: 'BMT01', businessType: '营业', subCode: 'BM01_01', subType: '获得电力', orderCode: 'BAC_010001', orderName: '低压非居民新装', orderCategory: '设备工单', attribute: '外勤', enabled: '是', trace: '否', vehicle: '否', material: '否', ticket: '否' },
-      { id: 3, traceSystem: 'gyxt', systemCode: '营销2.0', businessCode: 'BMT01', businessType: '营业', subCode: 'BM01_01', subType: '获得电力', orderCode: 'BAC_010002', orderName: '高压新装', orderCategory: '工程工单', attribute: '外勤', enabled: '是', trace: '是', vehicle: '是', material: '是', ticket: '是' },
-      { id: 4, traceSystem: 'gyxt', systemCode: '营销2.0', businessCode: 'BMT01', businessType: '营业', subCode: 'BM01_02', subType: '分布式光伏', orderCode: 'BAC_010050', orderName: '分布式光伏并网', orderCategory: '其他工单', attribute: '外勤', enabled: '是', trace: '是', vehicle: '是', material: '是', ticket: '否' },
-      { id: 5, traceSystem: 'gyxt', systemCode: '营销2.0', businessCode: 'BMT02', businessType: '电网', subCode: 'BM02_01', subType: '分布式并网', orderCode: 'BAC_020050', orderName: '分布式光伏客户并网服务', orderCategory: '设备工单', attribute: '内勤', enabled: '是', trace: '否', vehicle: '否', material: '否', ticket: '否' },
-      { id: 6, traceSystem: 'gyxt', systemCode: '营销2.0', businessCode: 'BMT02', businessType: '电网', subCode: 'BM02_02', subType: '线路检修', orderCode: 'BAC_020001', orderName: '10kV线路检修', orderCategory: '工程工单', attribute: '外勤', enabled: '是', trace: '是', vehicle: '是', material: '是', ticket: '是' },
-      { id: 7, traceSystem: 'gyxt', systemCode: '营销2.0', businessCode: 'BMT03', businessType: '配电', subCode: 'BM03_01', subType: '设备维护', orderCode: 'BAC_030001', orderName: '配变台区维护', orderCategory: '设备工单', attribute: '外勤', enabled: '是', trace: '是', vehicle: '是', material: '否', ticket: '否' },
-      { id: 8, traceSystem: 'gjf', systemCode: '供电服务指挥系统', businessCode: 'BMT04', businessType: '客服', subCode: 'BM04_01', subType: '故障报修', orderCode: 'BAC_040001', orderName: '95598故障报修', orderCategory: '设备工单', attribute: '外勤', enabled: '是', trace: '是', vehicle: '是', material: '否', ticket: '否' },
-      { id: 9, traceSystem: 'gjf', systemCode: '供电服务指挥系统', businessCode: 'BMT04', businessType: '客服', subCode: 'BM04_02', subType: '主动抢修', orderCode: 'BAC_040002', orderName: '主动抢修', orderCategory: '工程工单', attribute: '外勤', enabled: '是', trace: '是', vehicle: '是', material: '是', ticket: '否' },
-      { id: 10, traceSystem: 'dls', systemCode: '调度系统', businessCode: 'BMT05', businessType: '调度', subCode: 'BM05_01', subType: '调度操作', orderCode: 'BAC_050001', orderName: '倒闸操作', orderCategory: '设备工单', attribute: '内勤', enabled: '是', trace: '否', vehicle: '否', material: '否', ticket: '是' },
-      { id: 11, traceSystem: 'dls', systemCode: '调度系统', businessCode: 'BMT05', businessType: '调度', subCode: 'BM05_02', subType: '事故处理', orderCode: 'BAC_050002', orderName: '事故抢修', orderCategory: '工程工单', attribute: '外勤', enabled: '是', trace: '是', vehicle: '是', material: '是', ticket: '是' },
-      { id: 12, traceSystem: 'wms', systemCode: '物资管理系统', businessCode: 'BMT06', businessType: '物资', subCode: 'BM06_01', subType: '物资领用', orderCode: 'BAC_060001', orderName: '物资领用申请', orderCategory: '其他工单', attribute: '内勤', enabled: '是', trace: '否', vehicle: '否', material: '是', ticket: '否' },
+      { id: 1, traceSystem: '营销2.0', systemCode: 'yxxt', businessCode: 'BM01', businessType: '营业业扩', subCode: 'BM01_01', subType: '获得电力', orderCode: 'BAC_010000', orderType: '低压非居民新装增容', orderCategory: '设备工单', attribute: '外勤类', enabled: '启用', stepCode: 'BM01_01', stepName: 'xxxxxx' },
+      { id: 2, traceSystem: '营销2.0', systemCode: 'yxxt', businessCode: 'BM01', businessType: '营业业扩', subCode: 'BM01_01', subType: '获得电力', orderCode: 'BAC_010000', orderType: '高压新装增容', orderCategory: '客户工单', attribute: '内勤类', enabled: '关闭', stepCode: 'BM01_01', stepName: 'xxxxxx' },
+      { id: 3, traceSystem: '营销2.0', systemCode: 'yxxt', businessCode: 'BM01', businessType: '营业业扩', subCode: 'BM01_01', subType: '获得电力', orderCode: 'BAC_010000', orderType: '低压居民新装增容', orderCategory: '数据工单', attribute: '外勤类', enabled: '启用', stepCode: 'BM01_01', stepName: 'xxxxxx' },
+      { id: 4, traceSystem: '营销2.0', systemCode: 'yxxt', businessCode: 'BM01', businessType: '电源并网', subCode: 'BM01_01', subType: '分布式电源并网', orderCode: 'BAC_010000', orderType: '分布式电源分户', orderCategory: '其他类工单', attribute: '外勤类', enabled: '启用', stepCode: 'BM01_01', stepName: 'xxxxxx' },
+      { id: 5, traceSystem: '营销2.0', systemCode: 'yxxt', businessCode: 'BM01', businessType: '电源并网', subCode: 'BM01_01', subType: '分布式电源并网', orderCode: 'BAC_010000', orderType: '分布式电源销户', orderCategory: '设备工单', attribute: '内勤类', enabled: '关闭', stepCode: 'BM01_01', stepName: 'xxxxxx' },
+      { id: 6, traceSystem: '营销2.0', systemCode: 'yxxt', businessCode: 'BM01', businessType: '电源并网', subCode: 'BM01_01', subType: '分布式电源并网', orderCode: 'BAC_020000', orderType: '发电户申请校验', orderCategory: '客户工单', attribute: '外勤类', enabled: '启用', stepCode: 'BM01_01', stepName: 'xxxxxx' },
+      { id: 7, traceSystem: '营销2.0', systemCode: 'yxxt', businessCode: 'BM01', businessType: '电源并网', subCode: 'BM01_01', subType: '分布式电源并网', orderCode: 'BAC_020000', orderType: '发电户计量设备故障处理', orderCategory: '数据工单', attribute: '内勤类', enabled: '关闭', stepCode: 'BM01_01', stepName: 'xxxxxx' },
+      { id: 8, traceSystem: '营销2.0', systemCode: 'yxxt', businessCode: 'BM01', businessType: '电源并网', subCode: 'BM01_01', subType: '分布式电源并网', orderCode: 'BAC_010000', orderType: '发电户基础信息维护', orderCategory: '其他类工单', attribute: '外勤类', enabled: '启用', stepCode: 'BM01_01', stepName: 'xxxxxx' },
+      { id: 9, traceSystem: '供电服务指挥系统', systemCode: 'gdfu', businessCode: '--', businessType: '--', subCode: '--', subType: '--', orderCode: 'BAC_020000', orderType: '主动抢修', orderCategory: '设备工单', attribute: '外勤类', enabled: '启用', stepCode: 'BM01_01', stepName: 'xxxxxx' },
+      { id: 10, traceSystem: '供电服务指挥系统', systemCode: 'gdfu', businessCode: '--', businessType: '--', subCode: '--', subType: '--', orderCode: 'BAC_010000', orderType: '95598故障报修', orderCategory: '客户工单', attribute: '内勤类', enabled: '关闭', stepCode: 'BM01_01', stepName: 'xxxxxx' },
     ];
 
     let currentData = [...mockData];
@@ -427,8 +421,8 @@
     }
 
     function populateDropdowns() {
-      const fields = ['traceSystem', 'systemCode', 'businessCode', 'businessType', 'subCode', 'subType', 'orderCode', 'orderName', 'orderCategory', 'attribute'];
-      const ids = ['search-traceSystem', 'search-systemCode', 'search-businessCode', 'search-businessType', 'search-subCode', 'search-subType', 'search-orderCode', 'search-orderName', 'search-orderCategory', 'search-attribute'];
+      const fields = ['systemCode', 'traceSystem', 'businessCode', 'businessType', 'subCode', 'subType', 'orderCode', 'orderType', 'orderCategory', 'attribute'];
+      const ids = ['search-systemCode', 'search-traceSystem', 'search-businessCode', 'search-businessType', 'search-subCode', 'search-subType', 'search-orderCode', 'search-orderType', 'search-orderCategory', 'search-attribute'];
       
       fields.forEach((field, index) => {
         const select = document.getElementById(ids[index]);
@@ -458,14 +452,12 @@
             <td>${item.subCode}</td>
             <td>${isEditing ? '<input type="text" class="form-input" value="' + item.subType + '" id="edit-subType-' + item.id + '">' : item.subType}</td>
             <td>${item.orderCode}</td>
-            <td>${isEditing ? '<input type="text" class="form-input" value="' + item.orderName + '" id="edit-orderName-' + item.id + '">' : item.orderName}</td>
+            <td>${isEditing ? '<input type="text" class="form-input" value="' + item.orderType + '" id="edit-orderType-' + item.id + '">' : item.orderType}</td>
+            <td>${isEditing ? '<select class="form-select" id="edit-enabled-' + item.id + '"><option value="启用"' + (item.enabled === '启用' ? ' selected' : '') + '>启用</option><option value="关闭"' + (item.enabled === '关闭' ? ' selected' : '') + '>关闭</option></select>' : item.enabled}</td>
             <td>${isEditing ? '<input type="text" class="form-input" value="' + item.orderCategory + '" id="edit-orderCategory-' + item.id + '">' : item.orderCategory}</td>
-            <td>${isEditing ? '<select class="form-select" id="edit-enabled-' + item.id + '"><option value="是"' + (item.enabled === '是' ? ' selected' : '') + '>是</option><option value="否"' + (item.enabled === '否' ? ' selected' : '') + '>否</option></select>' : item.enabled}</td>
-            <td>${isEditing ? '<select class="form-select" id="edit-trace-' + item.id + '"><option value="是"' + (item.trace === '是' ? ' selected' : '') + '>是</option><option value="否"' + (item.trace === '否' ? ' selected' : '') + '>否</option></select>' : item.trace}</td>
-            <td>${isEditing ? '<select class="form-select" id="edit-attribute-' + item.id + '"><option value="外勤"' + (item.attribute === '外勤' ? ' selected' : '') + '>外勤</option><option value="内勤"' + (item.attribute === '内勤' ? ' selected' : '') + '>内勤</option></select>' : item.attribute}</td>
-            <td>${isEditing ? '<select class="form-select" id="edit-material-' + item.id + '"><option value="是"' + (item.material === '是' ? ' selected' : '') + '>是</option><option value="否"' + (item.material === '否' ? ' selected' : '') + '>否</option></select>' : item.material}</td>
-            <td>${isEditing ? '<select class="form-select" id="edit-vehicle-' + item.id + '"><option value="是"' + (item.vehicle === '是' ? ' selected' : '') + '>是</option><option value="否"' + (item.vehicle === '否' ? ' selected' : '') + '>否</option></select>' : item.vehicle}</td>
-            <td>${isEditing ? '<select class="form-select" id="edit-ticket-' + item.id + '"><option value="是"' + (item.ticket === '是' ? ' selected' : '') + '>是</option><option value="否"' + (item.ticket === '否' ? ' selected' : '') + '>否</option></select>' : item.ticket}</td>
+            <td>${isEditing ? '<input type="text" class="form-input" value="' + item.attribute + '" id="edit-attribute-' + item.id + '">' : item.attribute}</td>
+            <td>${isEditing ? '<input type="text" class="form-input" value="' + item.stepCode + '" id="edit-stepCode-' + item.id + '">' : item.stepCode}</td>
+            <td>${isEditing ? '<input type="text" class="form-input" value="' + item.stepName + '" id="edit-stepName-' + item.id + '">' : item.stepName}</td>
             <td class="actions">
               ${isEditing ? '<button class="action-btn save-btn" onclick="saveEdit(' + item.id + ')">保存</button><button class="action-btn cancel-btn" onclick="cancelEdit()">取消</button>' : '<button class="action-btn edit-btn" onclick="openEditModal(' + item.id + ')">工单配置修改</button><button class="action-btn edit-btn" onclick="openStepModal(' + item.id + ')">环节配置</button>'}
             </td>
@@ -495,21 +487,19 @@
       const id = pendingSaveId;
       const item = currentData.find(item => item.id === id);
       if (item) {
-        item.traceSystem = document.getElementById('edit-traceSystem-' + id).value;
         item.systemCode = document.getElementById('edit-systemCode-' + id).value;
+        item.traceSystem = document.getElementById('edit-traceSystem-' + id).value;
         item.businessCode = document.getElementById('edit-businessCode-' + id).value;
         item.businessType = document.getElementById('edit-businessType-' + id).value;
         item.subCode = document.getElementById('edit-subCode-' + id).value;
         item.subType = document.getElementById('edit-subType-' + id).value;
         item.orderCode = document.getElementById('edit-orderCode-' + id).value;
-        item.orderName = document.getElementById('edit-orderName-' + id).value;
+        item.orderType = document.getElementById('edit-orderType-' + id).value;
         item.orderCategory = document.getElementById('edit-orderCategory-' + id).value;
         item.attribute = document.getElementById('edit-attribute-' + id).value;
         item.enabled = document.getElementById('edit-enabled-' + id).value;
-        item.trace = document.getElementById('edit-trace-' + id).value;
-        item.vehicle = document.getElementById('edit-vehicle-' + id).value;
-        item.material = document.getElementById('edit-material-' + id).value;
-        item.ticket = document.getElementById('edit-ticket-' + id).value;
+        item.stepCode = document.getElementById('edit-stepCode-' + id).value;
+        item.stepName = document.getElementById('edit-stepName-' + id).value;
         
         editingId = null;
         pendingSaveId = null;
@@ -602,62 +592,49 @@
     }
 
     function handleSearch() {
-      const traceSystem = document.getElementById('search-traceSystem').value;
       const systemCode = document.getElementById('search-systemCode').value;
+      const traceSystem = document.getElementById('search-traceSystem').value;
       const businessCode = document.getElementById('search-businessCode').value;
       const businessType = document.getElementById('search-businessType').value;
       const subCode = document.getElementById('search-subCode').value;
       const subType = document.getElementById('search-subType').value;
       const orderCode = document.getElementById('search-orderCode').value;
-      const orderName = document.getElementById('search-orderName').value;
+      const orderType = document.getElementById('search-orderType').value;
       const orderCategory = document.getElementById('search-orderCategory').value;
       const attribute = document.getElementById('search-attribute').value;
       const enabled = document.getElementById('search-enabled').value;
-      const trace = document.getElementById('search-trace').value;
-      const vehicle = document.getElementById('search-vehicle').value;
-      const material = document.getElementById('search-material').value;
-      const ticket = document.getElementById('search-ticket').value;
 
       currentData = mockData.filter(item => {
-        const matchTraceSystem = !traceSystem || item.traceSystem === traceSystem;
         const matchSystemCode = !systemCode || item.systemCode.includes(systemCode);
+        const matchTraceSystem = !traceSystem || item.traceSystem === traceSystem;
         const matchBusinessCode = !businessCode || item.businessCode.includes(businessCode);
         const matchBusinessType = !businessType || item.businessType.includes(businessType);
         const matchSubCode = !subCode || item.subCode.includes(subCode);
         const matchSubType = !subType || item.subType.includes(subType);
         const matchOrderCode = !orderCode || item.orderCode.includes(orderCode);
-        const matchOrderName = !orderName || item.orderName.includes(orderName);
+        const matchOrderType = !orderType || item.orderType.includes(orderType);
         const matchCategory = !orderCategory || item.orderCategory.includes(orderCategory);
         const matchAttribute = !attribute || item.attribute.includes(attribute);
-        const matchEnabled = !enabled || item.enabled === (enabled === 'yes' ? '是' : '否');
-        const matchTrace = !trace || item.trace === (trace === 'yes' ? '是' : '否');
-        const matchVehicle = !vehicle || item.vehicle === (vehicle === 'yes' ? '是' : '否');
-        const matchMaterial = !material || item.material === (material === 'yes' ? '是' : '否');
-        const matchTicket = !ticket || item.ticket === (ticket === 'yes' ? '是' : '否');
-        return matchTraceSystem && matchSystemCode && matchBusinessCode && matchBusinessType &&
-               matchSubCode && matchSubType && matchOrderCode && matchOrderName &&
-               matchCategory && matchAttribute && matchEnabled && matchTrace &&
-               matchVehicle && matchMaterial && matchTicket;
+        const matchEnabled = !enabled || item.enabled === enabled;
+        return matchSystemCode && matchTraceSystem && matchBusinessCode && matchBusinessType &&
+               matchSubCode && matchSubType && matchOrderCode && matchOrderType &&
+               matchCategory && matchAttribute && matchEnabled;
       });
       renderTable(currentData);
     }
 
     function handleReset() {
-      document.getElementById('search-traceSystem').value = '';
       document.getElementById('search-systemCode').value = '';
+      document.getElementById('search-traceSystem').value = '';
       document.getElementById('search-businessCode').value = '';
       document.getElementById('search-businessType').value = '';
       document.getElementById('search-subCode').value = '';
       document.getElementById('search-subType').value = '';
       document.getElementById('search-orderCode').value = '';
-      document.getElementById('search-orderName').value = '';
+      document.getElementById('search-orderType').value = '';
       document.getElementById('search-orderCategory').value = '';
       document.getElementById('search-attribute').value = '';
       document.getElementById('search-enabled').value = '';
-      document.getElementById('search-trace').value = '';
-      document.getElementById('search-vehicle').value = '';
-      document.getElementById('search-material').value = '';
-      document.getElementById('search-ticket').value = '';
       currentData = [...mockData];
       renderTable(currentData);
     }

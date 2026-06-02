@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>掌上供用电后台管理系统 - 工单配置</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary-color: #1890FF;
+      --primary-hover: #40a9ff;
+      --success-color: #52c41a;
+      --warning-color: #faad14;
+      --danger-color: #f5222d;
+      --text-primary: #1f1f1f;
+      --text-secondary: #666666;
+      --text-placeholder: #999999;
+      --border-color: #d9d9d9;
+      --border-light: #f0f0f0;
+      --bg-page: #f0f2f5;
+      --bg-card: #ffffff;
+      --bg-hover: #e6f7ff;
+      --radius-sm: 4px;
+      --radius-md: 8px;
+      --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.06);
+      --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+    }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; font-size: 14px; color: var(--text-primary); background-color: var(--bg-page); }
+    #app { width: 100%; height: 100vh; }
+    .layout { display: flex; flex-direction: column; width: 100%; height: 100vh; }
+    .header { display: flex; justify-content: space-between; align-items: center; height: 56px; background: linear-gradient(135deg, var(--primary-color) 0%, #096dd9 100%); padding: 0 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.15); flex-shrink: 0; position: relative; z-index: 100; }
+    .header-left { display: flex; align-items: center; gap: 24px; }
+    .logo { display: flex; align-items: center; gap: 12px; }
+    .logo-icon { font-size: 28px; }
+    .logo-text { font-size: 18px; font-weight: 600; color: #fff; letter-spacing: 1px; }
+    .header-nav { display: flex; gap: 32px; }
+    .header-nav-item { color: rgba(255,255,255,0.85); cursor: pointer; padding: 8px 16px; border-radius: var(--radius-sm); transition: all 0.3s; }
+    .header-nav-item.active, .header-nav-item:hover { color: #fff; background: rgba(255,255,255,0.15); }
+    .header-right { display: flex; align-items: center; gap: 12px; }
+    .header-btn { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 8px 16px; border-radius: var(--radius-sm); cursor: pointer; transition: all 0.3s; font-size: 14px; }
+    .header-btn:hover { background: rgba(255,255,255,0.25); }
+    .user-info { display: flex; align-items: center; gap: 8px; background: rgba(255,255,255,0.1); padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.15); }
+    .user-name { color: #fff; font-size: 14px; }
+    .user-avatar { font-size: 18px; }
+    .main-content { display: flex; flex: 1; overflow: hidden; }
+    .sidebar { width: 210px; background: linear-gradient(180deg, #001529 0%, #000c17 100%); color: #fff; flex-shrink: 0; overflow-y: auto; }
+    .menu { padding: 12px 0; }
+    .menu-item { margin-bottom: 4px; }
+    .menu-header { display: flex; align-items: center; padding: 12px 20px; cursor: pointer; transition: all 0.3s; border-radius: 0 var(--radius-md) var(--radius-md) 0; margin-right: 8px; }
+    .menu-header:hover { background: rgba(255,255,255,0.05); }
+    .menu-header.active { background: var(--primary-color); }
+    .menu-icon { font-size: 16px; margin-right: 12px; }
+    .menu-name { flex: 1; font-size: 14px; font-weight: 500; }
+    .menu-arrow { font-size: 14px; transition: transform 0.3s; color: rgba(255,255,255,0.6); }
+    .menu-arrow.expanded { transform: rotate(90deg); }
+    .sub-menu { list-style: none; background: rgba(0,0,0,0.3); display: none; }
+    .sub-menu.expanded { display: block; }
+    .sub-menu-item { display: flex; align-items: center; padding: 10px 20px 10px 56px; cursor: pointer; transition: all 0.3s; border-left: 3px solid transparent; }
+    .sub-menu-item:hover { background: rgba(255,255,255,0.05); }
+    .sub-menu-item.active { background: rgba(24,144,255,0.15); border-left-color: var(--primary-color); }
+    .sub-menu-icon { font-size: 12px; margin-right: 10px; opacity: 0.7; }
+    .sub-menu-name { font-size: 13px; color: rgba(255,255,255,0.8); }
+    .sub-menu-item.active .sub-menu-name { color: var(--primary-color); }
+    .content { flex: 1; background: var(--bg-page); padding: 24px; overflow-y: auto; }
+    .breadcrumb { margin-bottom: 20px; font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 8px; }
+    .breadcrumb a { color: var(--primary-color); text-decoration: none; transition: color 0.3s; }
+    .breadcrumb a:hover { color: var(--primary-hover); text-decoration: underline; }
+    .breadcrumb span { color: #bbb; }
+    .breadcrumb .current { color: var(--text-primary); font-weight: 500; }
+    .page-title { font-size: 22px; font-weight: 600; color: var(--text-primary); margin-bottom: 24px; display: flex; align-items: center; gap: 12px; }
+    .page-title::before { content: ''; width: 4px; height: 20px; background: var(--primary-color); border-radius: 2px; }
+    .search-form { background: var(--bg-card); padding: 20px; border-radius: var(--radius-md); box-shadow: var(--shadow-sm); margin-bottom: 20px; }
+    .search-form-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 20px; margin-bottom: 16px; }
+    .search-form-row:last-child { margin-bottom: 0; }
+    .search-form-content { display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; flex: 1; }
+    .form-item { display: flex; align-items: center; gap: 8px; }
+    .form-item .form-label { white-space: nowrap; }
+    .form-label { font-size: 13px; color: var(--text-secondary); font-weight: 500; }
+    .form-input { width: 100%; height: 36px; padding: 0 12px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 13px; transition: all 0.3s; background: #fff; }
+    .form-input:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1); }
+    .form-select { width: 100%; height: 36px; padding: 0 12px; border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 13px; background: #fff; cursor: pointer; transition: all 0.3s; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
+    .form-select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.1); }
+    .search-form-actions { display: flex; flex-direction: column; justify-content: flex-start; gap: 10px; flex-shrink: 0; }
+    .table-actions { display: flex; justify-content: flex-end; align-items: center; gap: 12px; margin-bottom: 16px; }
+    .action-divider { width: 1px; height: 24px; background: #e8e8e8; margin: 0 8px; }
+    .btn { height: 36px; padding: 0 24px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; cursor: pointer; transition: all 0.3s; border: none; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+    .btn-primary { background: var(--primary-color); color: #fff; }
+    .btn-primary:hover { background: var(--primary-hover); box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3); }
+    .btn-default { background: #fafafa; color: var(--text-secondary); border: 1px solid var(--border-color); }
+    .btn-default:hover { background: #f0f0f0; border-color: var(--border-color); }
+    .table-wrapper { background: var(--bg-card); border-radius: var(--radius-md); box-shadow: var(--shadow-sm); overflow-x: auto; position: relative; width: 100%; }
+    .table { width: 100%; border-collapse: collapse; }
+    .table th, .table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid var(--border-light); font-size: 13px; white-space: nowrap; }
+    .table th { background: linear-gradient(180deg, #fafafa 0%, #f5f5f5 100%); font-weight: 600; color: var(--text-secondary); font-size: 13px; position: sticky; top: 0; z-index: 1; }
+    .table tbody tr:nth-child(even) { background: #fafafa; }
+    .table tbody tr:hover { background: var(--bg-hover); }
+    .table tbody tr.editing { background: #fffbe6; }
+    .table .actions { display: flex; gap: 6px; justify-content: flex-start; }
+    .table th:last-child, .table td:last-child { position: sticky; right: 0; z-index: 2; background: var(--bg-card) !important; box-shadow: -6px 0 12px rgba(0,0,0,0.06); width: 180px; }
+    .table th:last-child { z-index: 3; background: #fafafa !important; }
+    .table tbody tr:nth-child(even) td:last-child { background: #fafafa !important; }
+    .table tbody tr:hover td:last-child { background: var(--bg-hover) !important; }
+    .table tbody tr.editing td:last-child { background: #fffbe6 !important; }
+    .action-btn { padding: 6px 14px; font-size: 12px; border-radius: var(--radius-sm); cursor: pointer; border: none; transition: all 0.3s; font-weight: 500; }
+    .action-btn.edit-btn { background: var(--primary-color); color: #fff; }
+    .action-btn.edit-btn:hover { background: var(--primary-hover); }
+    .action-btn.save-btn { background: var(--success-color); color: #fff; }
+    .action-btn.save-btn:hover { background: #73d13d; }
+    .action-btn.cancel-btn { background: #f5f5f5; color: var(--text-secondary); border: 1px solid var(--border-color); }
+    .action-btn.cancel-btn:hover { background: #e8e8e8; }
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; display: none; backdrop-filter: blur(4px); }
+    .modal-overlay.show { display: flex; }
+    .modal { background: var(--bg-card); border-radius: var(--radius-md); width: 520px; max-width: 90%; max-height: 90vh; overflow-y: auto; box-shadow: 0 12px 40px rgba(0,0,0,0.15); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--border-light); }
+    .modal-title { font-size: 16px; font-weight: 600; color: var(--text-primary); }
+    .modal-close { background: #f5f5f5; border: none; font-size: 18px; color: var(--text-placeholder); cursor: pointer; padding: 4px 8px; border-radius: var(--radius-sm); transition: all 0.3s; }
+    .modal-close:hover { color: var(--text-secondary); background: #e8e8e8; }
+    .modal-body { padding: 20px; }
+    .modal-form { display: flex; flex-direction: column; gap: 20px; }
+    .modal-form .form-input, .modal-form .form-select { width: 100%; }
+    .modal-footer { display: flex; justify-content: flex-end; gap: 12px; padding: 16px 20px; border-top: 1px solid var(--border-light); }
+    .stats-cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat-card { background: var(--bg-card); border-radius: var(--radius-md); padding: 20px; box-shadow: var(--shadow-sm); transition: transform 0.3s, box-shadow 0.3s; }
+    .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .stat-card-icon { font-size: 32px; margin-bottom: 12px; }
+    .stat-card-value { font-size: 24px; font-weight: 600; color: var(--text-primary); margin-bottom: 4px; }
+    .stat-card-label { font-size: 13px; color: var(--text-secondary); }
+    .stat-card.trend-up .stat-card-value { color: var(--success-color); }
+    .stat-card.trend-down .stat-card-value { color: var(--danger-color); }
+    .confirm-modal { width: 380px; }
+    .confirm-body { padding: 36px 24px; text-align: center; }
+    .confirm-message { font-size: 18px; font-weight: 600; color: var(--text-primary); }
+  </style>
+</head>
+<body>
+  <div id="app" class="layout">
+    <header class="header">
+      <div class="header-left">
+        <div class="logo">
+          <span class="logo-icon">⚡</span>
+          <span class="logo-text">掌上供用电管理系统</span>
+        </div>
+        <nav class="header-nav">
+          <div class="header-nav-item" onclick="switchPage('home')">首页</div>
+          <div class="header-nav-item" onclick="switchPage('dashboard')">工作台概览</div>
+          <div class="header-nav-item active" onclick="switchPage('workorder')">工单管理</div>
+        </nav>
+      </div>
+      <div class="header-right">
+        <button class="header-btn">🔔 通知</button>
+        <button class="header-btn">⚙️ 设置</button>
+        <div class="user-info">
+          <span class="user-name">管理员</span>
+          <span class="user-avatar">👤</span>
+        </div>
+      </div>
+    </header>
+    
+    <div class="main-content">
+      <aside class="sidebar">
+        <nav class="menu">
+          <div class="menu-item">
+            <div class="menu-header" onclick="toggleMenu('menu1')">
+              <span class="menu-icon">🏠</span>
+              <span class="menu-name">首页</span>
+              <span class="menu-arrow" id="arrow1">›</span>
+            </div>
+          </div>
+          <div class="menu-item">
+            <div class="menu-header" onclick="toggleMenu('menu2')">
+              <span class="menu-icon">📊</span>
+              <span class="menu-name">工作台概览</span>
+              <span class="menu-arrow" id="arrow2">›</span>
+            </div>
+          </div>
+          <div class="menu-item">
+            <div class="menu-header active" onclick="toggleMenu('menu3')">
+              <span class="menu-icon">📋</span>
+              <span class="menu-name">工单管理</span>
+              <span class="menu-arrow expanded" id="arrow3">›</span>
+            </div>
+            <ul class="sub-menu expanded" id="submenu3">
+              <li class="sub-menu-item active" onclick="switchPage('workorder')"><span class="sub-menu-icon">⚙️</span><span class="sub-menu-name">工单配置</span></li>
+              <li class="sub-menu-item" onclick="switchPage('statistics')"><span class="sub-menu-icon">📈</span><span class="sub-menu-name">工单统计分析</span></li>
+            </ul>
+          </div>
+          <div class="menu-item">
+            <div class="menu-header" onclick="toggleMenu('menu4')">
+              <span class="menu-icon">🖥️</span>
+              <span class="menu-name">设备管理</span>
+              <span class="menu-arrow" id="arrow4">›</span>
+            </div>
+            <ul class="sub-menu" id="submenu4">
+              <li class="sub-menu-item"><span class="sub-menu-icon">📱</span><span class="sub-menu-name">设备列表</span></li>
+              <li class="sub-menu-item"><span class="sub-menu-icon">📁</span><span class="sub-menu-name">设备分类</span></li>
+            </ul>
+          </div>
+          <div class="menu-item">
+            <div class="menu-header" onclick="toggleMenu('menu5')">
+              <span class="menu-icon">📦</span>
+              <span class="menu-name">系统管理</span>
+              <span class="menu-arrow" id="arrow5">›</span>
+            </div>
+            <ul class="sub-menu" id="submenu5">
+              <li class="sub-menu-item"><span class="sub-menu-icon">👤</span><span class="sub-menu-name">用户管理</span></li>
+              <li class="sub-menu-item"><span class="sub-menu-icon">🎭</span><span class="sub-menu-name">角色管理</span></li>
+              <li class="sub-menu-item"><span class="sub-menu-icon">🔑</span><span class="sub-menu-name">权限配置</span></li>
+            </ul>
+          </div>
+          <div class="menu-item">
+            <div class="menu-header" onclick="toggleMenu('menu6')">
+              <span class="menu-icon">📉</span>
+              <span class="menu-name">报表中心</span>
+              <span class="menu-arrow" id="arrow6">›</span>
+            </div>
+            <ul class="sub-menu" id="submenu6">
+              <li class="sub-menu-item"><span class="sub-menu-icon">📅</span><span class="sub-menu-name">日报</span></li>
+              <li class="sub-menu-item"><span class="sub-menu-icon">📆</span><span class="sub-menu-name">周报</span></li>
+              <li class="sub-menu-item"><span class="sub-menu-icon">📊</span><span class="sub-menu-name">月报</span></li>
+            </ul>
+          </div>
+        </nav>
+      </aside>
+      
+      <main class="content">
+        <div id="page-home" style="display: none;">
+          <div class="breadcrumb">
+            <a href="#">首页</a>
+          </div>
+          <div class="page-title">欢迎使用掌上供用电管理系统</div>
+          <div class="stats-cards">
+            <div class="stat-card"><div class="stat-card-icon">📋</div><div class="stat-card-value">1,234</div><div class="stat-card-label">今日工单</div></div>
+            <div class="stat-card trend-up"><div class="stat-card-icon">✅</div><div class="stat-card-value">98%</div><div class="stat-card-label">完成率</div></div>
+            <div class="stat-card"><div class="stat-card-icon">👥</div><div class="stat-card-value">56</div><div class="stat-card-label">在线人员</div></div>
+            <div class="stat-card trend-down"><div class="stat-card-icon">⚠️</div><div class="stat-card-value">12</div><div class="stat-card-label">待处理</div></div>
+          </div>
+        </div>
+        
+        <div id="page-dashboard" style="display: none;">
+          <div class="breadcrumb">
+            <a href="#" onclick="switchPage('home')">首页</a><span>›</span><span>工作台概览</span>
+          </div>
+          <div class="page-title">工作台概览</div>
+          <div class="stats-cards">
+            <div class="stat-card"><div class="stat-card-icon">📋</div><div class="stat-card-value">12,856</div><div class="stat-card-label">本月工单总数</div></div>
+            <div class="stat-card trend-up"><div class="stat-card-icon">📈</div><div class="stat-card-value">+12.5%</div><div class="stat-card-label">较上月增长</div></div>
+            <div class="stat-card"><div class="stat-card-icon">⏱️</div><div class="stat-card-value">2.3h</div><div class="stat-card-label">平均处理时长</div></div>
+            <div class="stat-card"><div class="stat-card-icon">⭐</div><div class="stat-card-value">4.9</div><div class="stat-card-label">客户满意度</div></div>
+          </div>
+        </div>
+        
+        <div id="page-workorder">
+          <div class="breadcrumb">
+            <a href="#" onclick="switchPage('home')">首页</a><span>›</span><a href="#" onclick="switchPage('workorder')">工单管理</a><span>›</span><span>工单配置</span>
+          </div>
+          
+          <div class="page-title">工单配置</div>
+          
+          <div class="search-form">
+            <div class="search-form-row">
+              <div class="search-form-content">
+                <div class="form-item"><label class="form-label">溯源系统</label><select class="form-select" id="search-traceSystem"><option value="">全部</option></select></div>
+                <div class="form-item"><label class="form-label">系统编码</label><select class="form-select" id="search-systemCode"><option value="">全部</option></select></div>
+                <div class="form-item"><label class="form-label">业务类型编码</label><select class="form-select" id="search-businessCode"><option value="">全部</option></select></div>
+                <div class="form-item"><label class="form-label">业务类型</label><select class="form-select" id="search-businessType"><option value="">全部</option></select></div>
+                <div class="form-item"><label class="form-label">业务子类编码</label><select class="form-select" id="search-subCode"><option value="">全部</option></select></div>
+              </div>
+            </div>
+            <div class="search-form-row">
+              <div class="search-form-content">
+                <div class="form-item"><label class="form-label">业务子类</label><select class="form-select" id="search-subType"><option value="">全部</option></select></div>
+                <div class="form-item"><label class="form-label">工单类型编码</label><select class="form-select" id="search-orderCode"><option value="">全部</option></select></div>
+                <div class="form-item"><label class="form-label">工单类型名称</label><select class="form-select" id="search-orderName"><option value="">全部</option></select></div>
+                <div class="form-item"><label class="form-label">工单分类</label><select class="form-select" id="search-orderCategory"><option value="">全部</option></select></div>
+                <div class="form-item"><label class="form-label">业务属性</label><select class="form-select" id="search-attribute"><option value="">全部</option></select></div>
+              </div>
+            </div>
+            <div class="search-form-row">
+              <div class="search-form-content">
+                <div class="form-item"><label class="form-label">是否启用工单</label><select class="form-select" id="search-enabled"><option value="">全部</option><option value="yes">是</option><option value="no">否</option></select></div>
+                <div class="form-item"><label class="form-label">是否调取轨迹</label><select class="form-select" id="search-trace"><option value="">全部</option><option value="yes">是</option><option value="no">否</option></select></div>
+                <div class="form-item"><label class="form-label">是否涉及车辆</label><select class="form-select" id="search-vehicle"><option value="">全部</option><option value="yes">是</option><option value="no">否</option></select></div>
+                <div class="form-item"><label class="form-label">是否涉及物资</label><select class="form-select" id="search-material"><option value="">全部</option><option value="yes">是</option><option value="no">否</option></select></div>
+                <div class="form-item"><label class="form-label">是否涉及票卡</label><select class="form-select" id="search-ticket"><option value="">全部</option><option value="yes">是</option><option value="no">否</option></select></div>
+              </div>
+            </div>
+          </div>
+          
+          <div class="table-actions">
+            <button class="btn btn-default" onclick="handleRefresh()">数据刷新</button>
+            <button class="btn btn-default" onclick="handleExport()">数据导出</button>
+            <div class="action-divider"></div>
+            <button class="btn btn-default" onclick="handleReset()">重置条件</button>
+            <button class="btn btn-primary" onclick="handleSearch()">查询数据</button>
+          </div>
+          
+          <div class="table-wrapper">
+            <table class="table">
+              <thead>
+                <tr>
+                  <th>序号</th><th>溯源系统</th><th>系统编码</th><th>业务类型编码</th><th>业务类型</th><th>业务子类编码</th><th>业务子类</th><th>工单类型编码</th><th>工单类型名称</th><th>工单分类</th><th>业务属性</th><th>是否启用工单</th><th>是否调取轨迹</th><th>是否涉及车辆</th><th>是否涉及物资</th><th>是否涉及票卡</th><th>操作</th>
+                </tr>
+              </thead>
+              <tbody id="table-body"></tbody>
+            </table>
+          </div>
+        </div>
+        
+        <div id="page-statistics" style="display: none;">
+          <div class="breadcrumb">
+            <a href="#" onclick="switchPage('home')">首页</a><span>›</span><a href="#" onclick="switchPage('workorder')">工单管理</a><span>›</span><span>工单统计分析</span>
+          </div>
+          <div class="page-title">工单统计分析</div>
+          <div class="stats-cards">
+            <div class="stat-card"><div class="stat-card-icon">📋</div><div class="stat-card-value">56,234</div><div class="stat-card-label">累计工单</div></div>
+            <div class="stat-card trend-up"><div class="stat-card-icon">✅</div><div class="stat-card-value">95.6%</div><div class="stat-card-label">按时完成率</div></div>
+            <div class="stat-card"><div class="stat-card-icon">🔧</div><div class="stat-card-value">23,856</div><div class="stat-card-label">维修工单</div></div>
+            <div class="stat-card"><div class="stat-card-icon">🔌</div><div class="stat-card-value">18,423</div><div class="stat-card-label">安装工单</div></div>
+          </div>
+        </div>
+      </main>
+    </div>
+    
+    <div class="modal-overlay" id="modal-overlay">
+      <div class="modal">
+        <div class="modal-header"><span class="modal-title" id="modal-title">修改配置</span><button class="modal-close" onclick="closeModal()">×</button></div>
+        <div class="modal-body"><form class="modal-form" id="modal-form">
+          <div class="form-item"><label class="form-label">配置ID</label><input type="text" class="form-input" id="form-id" readonly></div>
+          <div class="form-item"><label class="form-label">配置名称</label><input type="text" class="form-input" id="form-name" placeholder="请输入配置名称"></div>
+        </form></div>
+        <div class="modal-footer">
+          <button class="btn btn-default" onclick="closeModal()">取消</button>
+          <button class="btn btn-primary" onclick="handleSave()">保存</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-overlay" id="confirm-modal-overlay">
+      <div class="modal confirm-modal">
+        <div class="modal-body confirm-body">
+          <div class="confirm-message">确定要保存修改吗？</div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-default" onclick="closeConfirmModal()">取消</button>
+          <button class="btn btn-primary" onclick="confirmSave()">确认</button>
+        </div>
+      </div>
+    </div>
+    
+    <div class="modal-overlay" id="step-modal-overlay">
+      <div class="modal">
+        <div class="modal-header"><span class="modal-title" id="step-modal-title">环节配置</span><button class="modal-close" onclick="closeStepModal()">×</button></div>
+        <div class="modal-body">
+          <form class="modal-form" id="step-modal-form">
+            <div class="form-item"><label class="form-label">环节名称</label><select class="form-select" id="step-name" onchange="handleStepNameChange()"><option value="">请选择环节名称</option></select></div>
+            <div class="form-item"><label class="form-label">环节编码</label><input type="text" class="form-input" id="step-code" readonly placeholder="请先选择环节名称"></div>
+            <div class="form-item"><label class="form-label">是否收资</label><select class="form-select" id="step-collect"><option value="收资">收资</option><option value="不收资">不收资</option></select></div>
+            <div class="form-item"><label class="form-label">是否配置轨迹</label><select class="form-select" id="step-trace"><option value="是">是</option><option value="否">否</option></select></div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-default" onclick="closeStepModal()">取消</button>
+          <button class="btn btn-primary" onclick="confirmStepSave()">确认</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const stepData = [
+      { name: '现场勘察', code: 'STEP_001' },
+      { name: '方案设计', code: 'STEP_002' },
+      { name: '施工准备', code: 'STEP_003' },
+      { name: '现场施工', code: 'STEP_004' },
+      { name: '竣工验收', code: 'STEP_005' },
+      { name: '资料归档', code: 'STEP_006' },
+      { name: '回访确认', code: 'STEP_007' },
+    ];
+
+    const mockData = [
+      { id: 1, traceSystem: 'gyxt', systemCode: '营销2.0', businessCode: 'BMT01', businessType: '营业', subCode: 'BM01_01', subType: '获得电力', orderCode: 'BAC_010000', orderName: '低压居民新装(新装)', orderCategory: '设备工单', attribute: '外勤', enabled: '是', trace: '否', vehicle: '否', material: '否', ticket: '否' },
+      { id: 2, traceSystem: 'gyxt', systemCode: '营销2.0', businessCode: 'BMT01', businessType: '营业', subCode: 'BM01_01', subType: '获得电力', orderCode: 'BAC_010000', orderName: '低压居民新装(新装)', orderCategory: '设备工单', attribute: '外勤', enabled: '是', trace: '否', vehicle: '否', material: '否', ticket: '否' },
+      { id: 3, traceSystem: 'gyxt', systemCode: '营销2.0', businessCode: 'BMT01', businessType: '营业', subCode: 'BM01_01', subType: '获得电力', orderCode: 'BAC_010000', orderName: '高压新装(增容)', orderCategory: '工程工单', attribute: '外勤', enabled: '是', trace: '是', vehicle: '是', material: '是', ticket: '是' },
+      { id: 4, traceSystem: 'gyxt', systemCode: '营销2.0', businessCode: 'BMT01', businessType: '营业', subCode: 'BM01_02', subType: '分布式光伏', orderCode: 'BAC_010050', orderName: '分布式光伏', orderCategory: '其他工单', attribute: '外勤', enabled: '是', trace: '是', vehicle: '是', material: '是', ticket: '否' },
+      { id: 5, traceSystem: 'gyxt', systemCode: '营销2.0', businessCode: 'BMT02', businessType: '电网', subCode: 'BM02_01', subType: '分布式并网', orderCode: 'BAC_020050', orderName: '分布式光伏客户并网服务', orderCategory: '设备工单', attribute: '内勤', enabled: '是', trace: '否', vehicle: '否', material: '否', ticket: '否' },
+      { id: 6, traceSystem: 'gyxt', systemCode: '营销2.0', businessCode: 'BMT02', businessType: '电网', subCode: 'BM02_01', subType: '分布式并网', orderCode: 'BAC_020050', orderName: '发电计量设备安装验收', orderCategory: '工程工单', attribute: '外勤', enabled: '是', trace: '是', vehicle: '是', material: '是', ticket: '否' },
+      { id: 7, traceSystem: 'gyxt', systemCode: '营销2.0', businessCode: 'BMT02', businessType: '电网', subCode: 'BM02_01', subType: '分布式并网', orderCode: 'BAC_020050', orderName: '发电计量设备安装验收', orderCategory: '工程工单', attribute: '外勤', enabled: '是', trace: '是', vehicle: '是', material: '是', ticket: '否' },
+      { id: 8, traceSystem: 'gyxt', systemCode: '营销2.0', businessCode: 'BMT02', businessType: '电网', subCode: 'BM02_01', subType: '分布式并网', orderCode: 'BAC_020050', orderName: '发电计量设备安装验收', orderCategory: '工程工单', attribute: '外勤', enabled: '是', trace: '是', vehicle: '是', material: '是', ticket: '否' },
+      { id: 9, traceSystem: 'gjf', systemCode: '供电服务指挥系统', businessCode: '--', businessType: '--', subCode: '--', subType: '--', orderCode: 'BAC_020000', orderName: '主动抢修', orderCategory: '设备工单', attribute: '外勤', enabled: '是', trace: '是', vehicle: '是', material: '是', ticket: '否' },
+      { id: 10, traceSystem: 'gjf', systemCode: '供电服务指挥系统', businessCode: '--', businessType: '--', subCode: '--', subType: '--', orderCode: 'BAC_020000', orderName: '95598故障报修', orderCategory: '工程工单', attribute: '外勤', enabled: '是', trace: '是', vehicle: '是', material: '是', ticket: '否' },
+    ];
+
+    let currentData = [...mockData];
+    let editingId = null;
+
+    function getUniqueValues(field) {
+      return [...new Set(mockData.map(item => item[field]))];
+    }
+
+    function populateDropdowns() {
+      const fields = ['traceSystem', 'systemCode', 'businessCode', 'businessType', 'subCode', 'subType', 'orderCode', 'orderName', 'orderCategory', 'attribute'];
+      const ids = ['search-traceSystem', 'search-systemCode', 'search-businessCode', 'search-businessType', 'search-subCode', 'search-subType', 'search-orderCode', 'search-orderName', 'search-orderCategory', 'search-attribute'];
+      
+      fields.forEach((field, index) => {
+        const select = document.getElementById(ids[index]);
+        if (select) {
+          const values = getUniqueValues(field);
+          values.forEach(value => {
+            const option = document.createElement('option');
+            option.value = value;
+            option.textContent = value;
+            select.appendChild(option);
+          });
+        }
+      });
+    }
+
+    function renderTable(data) {
+      const tbody = document.getElementById('table-body');
+      tbody.innerHTML = data.map((item, index) => {
+        const isEditing = editingId === item.id;
+        return `
+          <tr ${isEditing ? 'class="editing"' : ''}>
+            <td>${index + 1}</td>
+            <td>${item.traceSystem}</td>
+            <td>${isEditing ? '<input type="text" class="form-input" value="' + item.systemCode + '" id="edit-systemCode-' + item.id + '">' : item.systemCode}</td>
+            <td>${item.businessCode}</td>
+            <td>${isEditing ? '<input type="text" class="form-input" value="' + item.businessType + '" id="edit-businessType-' + item.id + '">' : item.businessType}</td>
+            <td>${item.subCode}</td>
+            <td>${isEditing ? '<input type="text" class="form-input" value="' + item.subType + '" id="edit-subType-' + item.id + '">' : item.subType}</td>
+            <td>${item.orderCode}</td>
+            <td>${isEditing ? '<input type="text" class="form-input" value="' + item.orderName + '" id="edit-orderName-' + item.id + '">' : item.orderName}</td>
+            <td>${isEditing ? '<input type="text" class="form-input" value="' + item.orderCategory + '" id="edit-orderCategory-' + item.id + '">' : item.orderCategory}</td>
+            <td>${isEditing ? '<input type="text" class="form-input" value="' + item.attribute + '" id="edit-attribute-' + item.id + '">' : item.attribute}</td>
+            <td>${isEditing ? '<select class="form-select" id="edit-enabled-' + item.id + '"><option value="是"' + (item.enabled === '是' ? ' selected' : '') + '>是</option><option value="否"' + (item.enabled === '否' ? ' selected' : '') + '>否</option></select>' : item.enabled}</td>
+            <td>${isEditing ? '<select class="form-select" id="edit-trace-' + item.id + '"><option value="是"' + (item.trace === '是' ? ' selected' : '') + '>是</option><option value="否"' + (item.trace === '否' ? ' selected' : '') + '>否</option></select>' : item.trace}</td>
+            <td>${isEditing ? '<select class="form-select" id="edit-vehicle-' + item.id + '"><option value="是"' + (item.vehicle === '是' ? ' selected' : '') + '>是</option><option value="否"' + (item.vehicle === '否' ? ' selected' : '') + '>否</option></select>' : item.vehicle}</td>
+            <td>${isEditing ? '<select class="form-select" id="edit-material-' + item.id + '"><option value="是"' + (item.material === '是' ? ' selected' : '') + '>是</option><option value="否"' + (item.material === '否' ? ' selected' : '') + '>否</option></select>' : item.material}</td>
+            <td>${isEditing ? '<select class="form-select" id="edit-ticket-' + item.id + '"><option value="是"' + (item.ticket === '是' ? ' selected' : '') + '>是</option><option value="否"' + (item.ticket === '否' ? ' selected' : '') + '>否</option></select>' : item.ticket}</td>
+            <td class="actions">
+              ${isEditing ? '<button class="action-btn save-btn" onclick="saveEdit(' + item.id + ')">保存</button><button class="action-btn cancel-btn" onclick="cancelEdit()">取消</button>' : '<button class="action-btn edit-btn" onclick="openEditModal(' + item.id + ')">工单配置修改</button><button class="action-btn edit-btn" onclick="openStepModal(' + item.id + ')">环节配置</button>'}
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function openEditModal(id) {
+      editingId = id;
+      renderTable(currentData);
+    }
+
+    let pendingSaveId = null;
+
+    function saveEdit(id) {
+      pendingSaveId = id;
+      document.getElementById('confirm-modal-overlay').classList.add('show');
+    }
+
+    function closeConfirmModal() {
+      document.getElementById('confirm-modal-overlay').classList.remove('show');
+      pendingSaveId = null;
+    }
+
+    function confirmSave() {
+      const id = pendingSaveId;
+      const item = currentData.find(item => item.id === id);
+      if (item) {
+        item.traceSystem = document.getElementById('edit-traceSystem-' + id).value;
+        item.systemCode = document.getElementById('edit-systemCode-' + id).value;
+        item.businessCode = document.getElementById('edit-businessCode-' + id).value;
+        item.businessType = document.getElementById('edit-businessType-' + id).value;
+        item.subCode = document.getElementById('edit-subCode-' + id).value;
+        item.subType = document.getElementById('edit-subType-' + id).value;
+        item.orderCode = document.getElementById('edit-orderCode-' + id).value;
+        item.orderName = document.getElementById('edit-orderName-' + id).value;
+        item.orderCategory = document.getElementById('edit-orderCategory-' + id).value;
+        item.attribute = document.getElementById('edit-attribute-' + id).value;
+        item.enabled = document.getElementById('edit-enabled-' + id).value;
+        item.trace = document.getElementById('edit-trace-' + id).value;
+        item.vehicle = document.getElementById('edit-vehicle-' + id).value;
+        item.material = document.getElementById('edit-material-' + id).value;
+        item.ticket = document.getElementById('edit-ticket-' + id).value;
+        
+        editingId = null;
+        pendingSaveId = null;
+        document.getElementById('confirm-modal-overlay').classList.remove('show');
+        renderTable(currentData);
+        alert('配置保存成功！');
+      }
+    }
+
+    function cancelEdit() {
+      editingId = null;
+      renderTable(currentData);
+    }
+
+    let currentWorkOrderId = null;
+
+    function populateStepDropdown() {
+      const select = document.getElementById('step-name');
+      select.innerHTML = '<option value="">请选择环节名称</option>';
+      stepData.forEach(step => {
+        const option = document.createElement('option');
+        option.value = step.name;
+        option.textContent = step.name;
+        select.appendChild(option);
+      });
+    }
+
+    function openStepModal(id) {
+      currentWorkOrderId = id;
+      populateStepDropdown();
+      document.getElementById('step-code').value = '';
+      document.getElementById('step-collect').value = '收资';
+      document.getElementById('step-trace').value = '是';
+      document.getElementById('step-modal-overlay').classList.add('show');
+    }
+
+    function closeStepModal() {
+      document.getElementById('step-modal-overlay').classList.remove('show');
+      currentWorkOrderId = null;
+    }
+
+    function handleStepNameChange() {
+      const stepName = document.getElementById('step-name').value;
+      const step = stepData.find(s => s.name === stepName);
+      document.getElementById('step-code').value = step ? step.code : '';
+    }
+
+    function confirmStepSave() {
+      const stepName = document.getElementById('step-name').value;
+      const stepCode = document.getElementById('step-code').value;
+      const collect = document.getElementById('step-collect').value;
+      const trace = document.getElementById('step-trace').value;
+      
+      if (!stepName) {
+        alert('请选择环节名称');
+        return;
+      }
+      
+      alert(`环节配置保存成功！\n工单ID: ${currentWorkOrderId}\n环节名称: ${stepName}\n环节编码: ${stepCode}\n是否收资: ${collect}\n是否配置轨迹: ${trace}`);
+      closeStepModal();
+    }
+
+    function toggleMenu(menuId) {
+      const submenu = document.getElementById('submenu' + menuId.replace('menu', ''));
+      const arrow = document.getElementById('arrow' + menuId.replace('menu', ''));
+      if (submenu && arrow) {
+        submenu.classList.toggle('expanded');
+        arrow.classList.toggle('expanded');
+      }
+    }
+
+    function switchPage(page) {
+      document.querySelectorAll('[id^="page-"]').forEach(el => el.style.display = 'none');
+      document.getElementById('page-' + page).style.display = 'block';
+      document.querySelectorAll('.header-nav-item').forEach(el => el.classList.remove('active'));
+      document.querySelector('[onclick="switchPage(\'' + page + '\')"]')?.classList.add('active');
+      document.querySelectorAll('.menu-header').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.sub-menu-item').forEach(el => el.classList.remove('active'));
+      if (page === 'home') {
+        document.querySelector('.menu-header:first-child')?.classList.add('active');
+      } else if (page === 'dashboard') {
+        document.querySelectorAll('.menu-header')[1]?.classList.add('active');
+      } else if (page === 'workorder') {
+        document.querySelectorAll('.menu-header')[2]?.classList.add('active');
+        document.querySelectorAll('.sub-menu-item')[0]?.classList.add('active');
+      } else if (page === 'statistics') {
+        document.querySelectorAll('.menu-header')[2]?.classList.add('active');
+        document.querySelectorAll('.sub-menu-item')[1]?.classList.add('active');
+      }
+    }
+
+    function handleSearch() {
+      const traceSystem = document.getElementById('search-traceSystem').value;
+      const systemCode = document.getElementById('search-systemCode').value;
+      const businessCode = document.getElementById('search-businessCode').value;
+      const businessType = document.getElementById('search-businessType').value;
+      const subCode = document.getElementById('search-subCode').value;
+      const subType = document.getElementById('search-subType').value;
+      const orderCode = document.getElementById('search-orderCode').value;
+      const orderName = document.getElementById('search-orderName').value;
+      const orderCategory = document.getElementById('search-orderCategory').value;
+      const attribute = document.getElementById('search-attribute').value;
+      const enabled = document.getElementById('search-enabled').value;
+      const trace = document.getElementById('search-trace').value;
+      const vehicle = document.getElementById('search-vehicle').value;
+      const material = document.getElementById('search-material').value;
+      const ticket = document.getElementById('search-ticket').value;
+
+      currentData = mockData.filter(item => {
+        const matchTraceSystem = !traceSystem || item.traceSystem === traceSystem;
+        const matchSystemCode = !systemCode || item.systemCode.includes(systemCode);
+        const matchBusinessCode = !businessCode || item.businessCode.includes(businessCode);
+        const matchBusinessType = !businessType || item.businessType.includes(businessType);
+        const matchSubCode = !subCode || item.subCode.includes(subCode);
+        const matchSubType = !subType || item.subType.includes(subType);
+        const matchOrderCode = !orderCode || item.orderCode.includes(orderCode);
+        const matchOrderName = !orderName || item.orderName.includes(orderName);
+        const matchCategory = !orderCategory || item.orderCategory.includes(orderCategory);
+        const matchAttribute = !attribute || item.attribute.includes(attribute);
+        const matchEnabled = !enabled || item.enabled === (enabled === 'yes' ? '是' : '否');
+        const matchTrace = !trace || item.trace === (trace === 'yes' ? '是' : '否');
+        const matchVehicle = !vehicle || item.vehicle === (vehicle === 'yes' ? '是' : '否');
+        const matchMaterial = !material || item.material === (material === 'yes' ? '是' : '否');
+        const matchTicket = !ticket || item.ticket === (ticket === 'yes' ? '是' : '否');
+        return matchTraceSystem && matchSystemCode && matchBusinessCode && matchBusinessType &&
+               matchSubCode && matchSubType && matchOrderCode && matchOrderName &&
+               matchCategory && matchAttribute && matchEnabled && matchTrace &&
+               matchVehicle && matchMaterial && matchTicket;
+      });
+      renderTable(currentData);
+    }
+
+    function handleReset() {
+      document.getElementById('search-traceSystem').value = '';
+      document.getElementById('search-systemCode').value = '';
+      document.getElementById('search-businessCode').value = '';
+      document.getElementById('search-businessType').value = '';
+      document.getElementById('search-subCode').value = '';
+      document.getElementById('search-subType').value = '';
+      document.getElementById('search-orderCode').value = '';
+      document.getElementById('search-orderName').value = '';
+      document.getElementById('search-orderCategory').value = '';
+      document.getElementById('search-attribute').value = '';
+      document.getElementById('search-enabled').value = '';
+      document.getElementById('search-trace').value = '';
+      document.getElementById('search-vehicle').value = '';
+      document.getElementById('search-material').value = '';
+      document.getElementById('search-ticket').value = '';
+      currentData = [...mockData];
+      renderTable(currentData);
+    }
+
+    function openEditModalOld(id) {
+      editingItem = mockData.find(item => item.id === id);
+      if (editingItem) {
+        document.getElementById('form-id').value = editingItem.id;
+        document.getElementById('form-name').value = editingItem.orderName;
+        document.getElementById('modal-overlay').classList.add('show');
+      }
+    }
+
+    function closeModal() {
+      document.getElementById('modal-overlay').classList.remove('show');
+      editingItem = null;
+    }
+
+    function handleSave() {
+      if (editingItem) {
+        editingItem.name = document.getElementById('form-name').value;
+        editingItem.type = document.getElementById('form-type').value;
+        editingItem.status = document.getElementById('form-status').value;
+        editingItem.priority = document.getElementById('form-priority').value;
+        editingItem.updateTime = new Date().toLocaleString('zh-CN');
+        renderTable(currentData);
+        closeModal();
+        alert('配置保存成功！');
+      }
+    }
+
+    function handleRefresh() {
+      currentData = [...mockData];
+      renderTable(currentData);
+      alert('数据刷新成功！');
+    }
+
+    function handleExport() {
+      alert('数据导出功能已触发！');
+    }
+
+    populateDropdowns();
+    renderTable(mockData);
+  </script>
+</body>
+</html>
